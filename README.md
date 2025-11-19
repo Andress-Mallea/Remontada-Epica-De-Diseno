@@ -14,3 +14,5 @@ Reglas esenciales
 4. Registro de atención y cierre de cita.
 5. Listados por estado, médico y fecha.
 6. Identificación con CI.
+## Link Documentacion
+Link: https://docs.google.com/document/d/1QRrl_cycSIKQE9rO-C7H73L2HG5zmhoM8FubFE-xTps/edit?usp=sharing
