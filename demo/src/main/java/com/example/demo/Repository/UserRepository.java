@@ -9,10 +9,11 @@ import java.util.List;
 @Repository
 public class UserRepository {
     private List<User> Users = new ArrayList<>();
-    public void guardar(User u) {
+    public void save(User u) {
         Users.add(u);
     }
     public List<User> getAll() {
         return Users;
     }
+
 }
