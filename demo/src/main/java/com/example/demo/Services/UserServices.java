@@ -27,7 +27,7 @@ public class UserServices {
             throw new IllegalArgumentException("tipo Usuario no soportado: " + tipoUsuario);
         }
         User newUser = factory.AddUser(data);
-        repository.guardar(newUser);
+        repository.save(newUser);
         return newUser;
     }
 }

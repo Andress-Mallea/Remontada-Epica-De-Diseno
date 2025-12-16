@@ -11,4 +11,8 @@ public abstract class User {
         this.Password = Password;
         this.Name = Name;
     }
+
+    public String getCI() {
+        return CI;
+    }
 }
