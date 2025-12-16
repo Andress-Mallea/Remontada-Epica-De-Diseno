@@ -6,4 +6,24 @@ public class UserRegistrationDto {
     private String Password;
     private String Name;
     private String Specialty;
+
+    public String getCI() {
+        return CI;
+    }
+
+    public String getEmail() {
+        return Email;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getSpecialty() {
+        return Specialty;
+    }
 }
