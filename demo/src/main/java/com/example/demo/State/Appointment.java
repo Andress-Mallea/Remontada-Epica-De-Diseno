@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 
 import com.example.demo.Model.Medic;
 import com.example.demo.Model.Patient;
+import com.example.demo.Observer.IObserverNotify;
 import com.example.demo.State.States.RequestState;
+import java.util.List;
 public class Appointment {
     private String ID;
     private Patient Patient;
@@ -12,6 +14,8 @@ public class Appointment {
     private LocalDateTime DateHour;
     private RegisterAppointment RegisterAppointment;
     private AppointmentState State;
+
+    private List<IObserverNotify> Subscribers;
     
     public String getID() {
         return ID;
@@ -48,6 +52,10 @@ public class Appointment {
     public RegisterAppointment getRegisterAppointment() {
         return RegisterAppointment;
     }
+
+    public List<IObserverNotify> getSubscribers() { return Subscribers; }
+    public void setSubscribers(List<IObserverNotify> subscribers) { Subscribers = subscribers; }
+
 
     public void setRegisterAppointment(RegisterAppointment registerAppointment) {
         this.RegisterAppointment = registerAppointment;
