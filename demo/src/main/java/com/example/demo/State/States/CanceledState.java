@@ -1,29 +1,30 @@
 package com.example.demo.State.States;
 
 import com.example.demo.State.AppointmentState;
+import com.example.demo.State.StateAppointment;
 
 public class CanceledState extends AppointmentState {
 
 	@Override
 	public void Attend() {
-		// Implementation for Attend in CanceledState
+		throw new IllegalStateException("No se puede asistir a una cita cancelada.");
 	}
 
 	@Override
 	public void Cancel() {
-		// Implementation for Cancel in CanceledState
+		throw new IllegalStateException("La cita ya está cancelada.");
 	}
 
 	@Override
 	public void Request() {
-		// Implementation for Request in CanceledState
+		throw new IllegalStateException("No se puede solicitar una cita que está cancelada.");
 	}
 
 	@Override
 	public void Confirm() {
-		// Implementation for Confirm in CanceledState
+		throw new IllegalStateException("No se puede confirmar una cita cancelada.");
 	}
     public void Finish(){
-        //A implementar
+        // Final cleanup for canceled appointment if needed (no-op)
     }
 }

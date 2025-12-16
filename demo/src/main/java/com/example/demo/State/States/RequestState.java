@@ -1,26 +1,33 @@
 package com.example.demo.State.States;
 
 import com.example.demo.State.AppointmentState;
+import com.example.demo.State.StateAppointment;
 
 public class RequestState extends AppointmentState {
 
 	@Override
 	public void Attend() {
-		// TODO: Implement Attend logic
+		throw new IllegalStateException("No se puede asistir a una cita que no ha sido confirmada.");
 	}
 
 	@Override
 	public void Cancel() {
-		// TODO: Implement Cancel logic
+		CanceledState s = new CanceledState();
+		s.setContext(this.context);
+		s.setState(StateAppointment.CANCELED);
+		this.context.setEstate(s);
 	}
 
 	@Override
 	public void Request() {
-		// TODO: Implement Request logic
+		throw new IllegalStateException("La cita ya está en estado 'REQUESTED'.");
 	}
 
 	@Override
 	public void Confirm() {
-		// TODO: Implement Confirm logic
+		ConfirmedState s = new ConfirmedState();
+		s.setContext(this.context);
+		s.setState(StateAppointment.CONFIRMED);
+		this.context.setEstate(s);
 	}
 }

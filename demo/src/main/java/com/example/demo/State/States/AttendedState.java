@@ -1,26 +1,27 @@
 package com.example.demo.State.States;
 
 import com.example.demo.State.AppointmentState;
+import com.example.demo.State.StateAppointment;
 
 public class AttendedState extends AppointmentState {
 
 	@Override
 	public void Request() {
-		// Implementation of Request method
+		throw new IllegalStateException("La cita ya fue atendida.");
 	}
 
 	@Override
 	public void Attend() {
-		// Implementation of Attend method
+		throw new IllegalStateException("La cita ya fue atendida.");
 	}
 
 	@Override
 	public void Cancel() {
-		// Implementation of Cancel method
+		throw new IllegalStateException("No se puede cancelar una cita que ya fue atendida.");
 	}
 
 	@Override
 	public void Confirm() {
-		// Implementation of Confirm method
+		throw new IllegalStateException("No se puede confirmar una cita que ya fue atendida.");
 	}
 }

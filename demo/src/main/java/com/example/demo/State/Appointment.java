@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.demo.Model.Medic;
 import com.example.demo.Model.Patient;
+import com.example.demo.State.States.RequestState;
 public class Appointment {
     private String ID;
     private Patient Patient;
@@ -61,13 +62,31 @@ public class Appointment {
     }
 
     public void Confirm(){
-        //A implementar
+        if(this.State == null) {
+            AppointmentState s = new RequestState();
+            s.setContext(this);
+            this.State = s;
+        }
+        this.State.setContext(this);
+        this.State.Confirm();
     }
     public void Cancel(){
-         //A implementar
+         if(this.State == null) {
+            AppointmentState s = new RequestState();
+            s.setContext(this);
+            this.State = s;
+        }
+        this.State.setContext(this);
+        this.State.Cancel();
     }
     public void Attend(){
-         //A implementar
+         if(this.State == null) {
+            AppointmentState s = new RequestState();
+            s.setContext(this);
+            this.State = s;
+        }
+        this.State.setContext(this);
+        this.State.Attend();
     }
 }
 

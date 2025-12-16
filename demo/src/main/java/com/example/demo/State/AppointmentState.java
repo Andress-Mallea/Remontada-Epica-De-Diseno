@@ -20,11 +20,19 @@ public abstract class AppointmentState implements  PatternStateAppointment{
         this.State = state;
     }
     @Override
-    public abstract void Request();
+    public void Request(){
+        throw new IllegalStateException("Error 01: Accion Invalida");
+    };
     @Override
-    public abstract void Cancel();
+    public void Cancel(){
+        throw new IllegalStateException("Error 01: Accion Invalida");
+    };
     @Override
-    public abstract void Confirm();
+    public void Confirm(){
+        throw new IllegalStateException("Error 01: Accion Invalida");
+    };
     @Override
-    public abstract void Attend();
+    public void Attend(){
+        throw new IllegalStateException("Error 01: Accion Invalida");
+    };
 }
