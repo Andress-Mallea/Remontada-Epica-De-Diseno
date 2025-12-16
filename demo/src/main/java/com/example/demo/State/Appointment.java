@@ -10,7 +10,7 @@ import com.example.demo.State.States.RequestState;
 import java.util.ArrayList;
 import java.util.List;
 public class Appointment {
-    private String ID;
+    private static String ID = "1000";
     private Patient Patient;
     private Medic Medic;
     private LocalDateTime DateHour;
@@ -18,7 +18,16 @@ public class Appointment {
     private AppointmentState State;
 
     private List<IObserverNotify> Subscribers = new ArrayList<>();
-    
+    public Appointment(Patient Patient, Medic Medic, LocalDateTime DateHour) {
+        this.ID = String.valueOf((Integer.parseInt(ID) + 1));
+        this.Patient = Patient;
+        this.Medic = Medic;
+        this.DateHour = DateHour;
+        this.RegisterAppointment = new RegisterAppointment();
+        this.State = new RequestState();
+        this.State.setState(StateAppointment.REQUESTED);
+        this.State.setContext(this);
+    }
     public String getID() {
         return ID;
     }
