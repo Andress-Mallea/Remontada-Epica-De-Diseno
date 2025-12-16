@@ -7,6 +7,8 @@ import com.example.demo.Repository.UserRepository;
 import com.example.demo.State.Appointment;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AppointmentService {
     private final UserRepository userRepository;
@@ -30,12 +32,21 @@ public class AppointmentService {
             throw new RuntimeException("Paciente no encontrado");
         }
         Medic medic = (Medic) userMedic;
-        if(!medic.getAgenda().isAvaible(data.getDay(), data.getHour())) {
+
+        LocalDateTime fechaCita = data.getFecha();
+        int diaSemana = fechaCita.getDayOfWeek().getValue();
+        int indexAgenda = diaSemana - 1;
+        if(indexAgenda < 0 || indexAgenda > 4) {
+            throw new IllegalArgumentException("La clinica solo atiende de lunes a viernes");
+        }
+        int horaCita = fechaCita.getHour();
+
+        if(!medic.getAgenda().isAvaible(indexAgenda, horaCita)) {
             throw new IllegalStateException("Horario Ocupado");
         }
         Patient patient = (Patient) userPatient;
         Appointment newAppointment = new Appointment(patient, medic, data.getFecha());
-        medic.getAgenda().addAppointment(data.getDay(), data.getHour(), newAppointment);
+        medic.getAgenda().addAppointment(indexAgenda, horaCita, newAppointment);
         appointmentRepository.save(newAppointment);
         return "Cita creada exitosamente";
     }

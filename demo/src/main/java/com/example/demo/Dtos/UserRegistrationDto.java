@@ -7,9 +7,7 @@ public class UserRegistrationDto {
     private String password;
     private String name;
     private String specialty;
-    private String tipo; // Este campo es CRÍTICO para tu Factory
-
-    // 2. Agregar Getters Y SETTERS (Indispensable para recibir datos)
+    private String tipo;
 
     public String getCi() { return ci; }
     public void setCi(String ci) { this.ci = ci; }

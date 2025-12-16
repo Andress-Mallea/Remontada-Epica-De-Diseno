@@ -17,6 +17,12 @@ public abstract class User {
     public String getCI() {
         return CI;
     }
+    public String getEmail() {
+        return this.Email;
+    }
+    public String getName() {
+        return this.Name;
+    }
     public Role getRole() {
         return role;
     }

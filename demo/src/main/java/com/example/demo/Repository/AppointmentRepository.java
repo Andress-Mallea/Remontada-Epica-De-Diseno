@@ -2,11 +2,12 @@ package com.example.demo.Repository;
 
 import com.example.demo.State.Appointment;
 import com.example.demo.State.StateAppointment;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Repository
 public class AppointmentRepository {
     private List<Appointment> Appoiments = new ArrayList<>();
     public List<Appointment> getByState(StateAppointment estado) {

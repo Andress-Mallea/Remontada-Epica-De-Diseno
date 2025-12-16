@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.Dtos.UserDto;
 import com.example.demo.Dtos.UserRegistrationDto;
 import com.example.demo.Factory.*;
 import com.example.demo.Model.User;
@@ -7,7 +8,9 @@ import com.example.demo.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServices {
@@ -29,5 +32,9 @@ public class UserServices {
         User newUser = factory.AddUser(data);
         repository.save(newUser);
         return newUser;
+    }
+    public List<UserDto> getAllUsers() {
+        List<User> users =  repository.getAll();
+        return users.stream().map(UserDto::fromUser).collect(Collectors.toList());
     }
 }
