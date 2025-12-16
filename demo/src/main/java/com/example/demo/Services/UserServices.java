@@ -16,7 +16,7 @@ public class UserServices {
     public UserServices(UserRepository repository) {
         this.repository = repository;
         this.fabrics = new HashMap<>();
-        this.fabrics.put("PACIENTE", new FactoryPatient());
+        this.fabrics.put("PATIENT", new FactoryPatient());
         this.fabrics.put("MEDIC", new FactoryMedic());
         this.fabrics.put("ADMIN", new FactoryAdministrator());
         this.fabrics.put("RECEPTIONIST", new FactoryReceptionist());
