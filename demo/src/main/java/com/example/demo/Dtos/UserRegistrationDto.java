@@ -6,7 +6,7 @@ public class UserRegistrationDto {
     private String Password;
     private String Name;
     private String Specialty;
-
+    private String Tipo;
     public String getCI() {
         return CI;
     }
@@ -25,5 +25,8 @@ public class UserRegistrationDto {
 
     public String getSpecialty() {
         return Specialty;
+    }
+    public String getTipo() {
+        return Tipo;
     }
 }
