@@ -7,6 +7,7 @@ import com.example.demo.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -30,4 +31,9 @@ public class UserServices {
         repository.save(newUser);
         return newUser;
     }
+
+    public List<User> getAllUsers() {
+        return repository.getAll();
+    }
+
 }
