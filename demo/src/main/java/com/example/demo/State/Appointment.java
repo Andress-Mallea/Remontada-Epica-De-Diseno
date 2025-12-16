@@ -6,6 +6,8 @@ import com.example.demo.Model.Medic;
 import com.example.demo.Model.Patient;
 import com.example.demo.Observer.IObserverNotify;
 import com.example.demo.State.States.RequestState;
+
+import java.util.ArrayList;
 import java.util.List;
 public class Appointment {
     private String ID;
@@ -15,7 +17,7 @@ public class Appointment {
     private RegisterAppointment RegisterAppointment;
     private AppointmentState State;
 
-    private List<IObserverNotify> Subscribers;
+    private List<IObserverNotify> Subscribers = new ArrayList<>();
     
     public String getID() {
         return ID;
@@ -30,6 +32,9 @@ public class Appointment {
     }
 
     public void setPatient(Patient patient) {
+        if (patient != null) {
+            Subscribers.add(patient);
+        }
         this.Patient = patient;
     }
 
@@ -38,6 +43,9 @@ public class Appointment {
     }
 
     public void setMedic(Medic medic) {
+        if (medic != null) {
+            Subscribers.add(medic);
+        }
         this.Medic = medic;
     }
 
@@ -77,6 +85,8 @@ public class Appointment {
         }
         this.State.setContext(this);
         this.State.Confirm();
+
+        NotifySubscribers("Cita confirmada");
     }
     public void Cancel(){
          if(this.State == null) {
@@ -86,6 +96,8 @@ public class Appointment {
         }
         this.State.setContext(this);
         this.State.Cancel();
+
+        NotifySubscribers("Cita cancelada");
     }
     public void Attend(){
          if(this.State == null) {
@@ -95,6 +107,14 @@ public class Appointment {
         }
         this.State.setContext(this);
         this.State.Attend();
+
+        NotifySubscribers("Cita attendida");
+    }
+
+    public void NotifySubscribers(String message) {
+        for (IObserverNotify obs : Subscribers) {
+            obs.Notify(message);
+        }
     }
 }
 
