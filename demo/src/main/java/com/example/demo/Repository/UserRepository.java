@@ -15,5 +15,7 @@ public class UserRepository {
     public List<User> getAll() {
         return Users;
     }
-
+    public User findByCi(String Ci) {
+        return  Users.stream().filter(x-> x.getCI() == Ci).findFirst().orElse(null);
+    }
 }
