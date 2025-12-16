@@ -1,5 +1,6 @@
 package com.example.demo.Repository;
 
+import com.example.demo.Model.Medic;
 import com.example.demo.Model.User;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,7 @@ public class UserRepository {
         return Users;
     }
     public User findByCi(String Ci) {
-        return  Users.stream().filter(x-> x.getCI() == Ci).findFirst().orElse(null);
+        return  Users.stream().filter(x-> x.getCI().equals(Ci)).findFirst().orElse(null);
     }
+
 }

@@ -5,6 +5,7 @@ import com.example.demo.State.StateAppointment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AppointmentRepository {
     private List<Appointment> Appoiments = new ArrayList<>();
@@ -17,5 +18,8 @@ public class AppointmentRepository {
     }
     public void save(Appointment a) {
         Appoiments.add(a);
+    }
+    public List<Appointment> findByState(StateAppointment state) {
+        return Appoiments.stream().filter(x -> x.getEstate().getState().equals(state)).collect(Collectors.toList());
     }
 }
