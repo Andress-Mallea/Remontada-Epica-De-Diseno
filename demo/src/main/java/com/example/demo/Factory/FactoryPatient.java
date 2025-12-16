@@ -7,6 +7,6 @@ import com.example.demo.Model.User;
 public class FactoryPatient extends FactoryUser {
     @Override
     public User CreateUser(UserRegistrationDto data) {
-        return new Patient(data.getCI(), data.getEmail(), data.getPassword(), data.getName());
+        return new Patient(data.getCi(), data.getEmail(), data.getPassword(), data.getName());
     }
 }
