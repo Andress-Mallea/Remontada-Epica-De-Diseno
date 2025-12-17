@@ -28,6 +28,25 @@ public class Appointment {
         this.State.setState(StateAppointment.REQUESTED);
         this.State.setContext(this);
     }
+
+    public void addToMedicAgenda() {
+        int diaSemana = this.DateHour.getDayOfWeek().getValue();
+        int indexAgenda = diaSemana - 1; // 0 para Lunes, etc.
+        int horaCita = this.DateHour.getHour();
+
+        if (this.Medic.getAgenda().isAvaible(indexAgenda, horaCita)) {
+            this.Medic.getAgenda().addAppointment(indexAgenda, horaCita, this);
+        } else {
+            throw new IllegalStateException("No se puede confirmar: El horario del médico ya ha sido ocupado.");
+        }
+    }
+    public void removeFromMedicAgenda() {
+        int diaSemana = this.DateHour.getDayOfWeek().getValue();
+        int indexAgenda = diaSemana - 1;
+        int horaCita = this.DateHour.getHour();
+        this.Medic.getAgenda().removeAppoiment(indexAgenda, horaCita);
+    }
+
     public String getID() {
         return ID;
     }

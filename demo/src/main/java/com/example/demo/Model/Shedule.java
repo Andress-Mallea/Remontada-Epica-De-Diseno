@@ -22,6 +22,13 @@ public class Shedule {
         Agenda[day].put(hour,appointment);
     }
 
+    public void removeAppoiment(int day, int hour) {
+        if(day< 0 || day >4) throw new IllegalArgumentException("Dia Invalido");
+        if(Agenda[day].containsKey(hour)) {
+            Agenda[day].remove(hour);
+        }
+    }
+
     public Map<Integer, Appointment>[] getAgenda() {
         return Agenda;
     }

@@ -14,8 +14,8 @@ public class AppointmentRepository {
         List<Appointment> result = Appoiments.stream().filter(x-> x.getEstate().getState() == estado).toList();
         return result;
     }
-    public List<Appointment> getByCI(String CI) {
-        return Appoiments.stream().filter(x-> x.getMedic().getCI() == CI).toList();
+    public Appointment findById(String id) {
+        return Appoiments.stream().filter(x-> x.getID().equals(id)).findFirst().orElse(null);
     }
     public void save(Appointment a) {
         Appoiments.add(a);

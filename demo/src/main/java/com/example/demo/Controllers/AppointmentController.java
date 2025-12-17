@@ -41,4 +41,42 @@ public class AppointmentController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<?> confirm(@PathVariable String id, @RequestParam String resquesterCi) {
+        try {
+            service.confirmAppointment(id, resquesterCi);
+            return ResponseEntity.ok("Cita confirmada exitosamente");
+        }
+        catch (SecurityException e) {
+            return ResponseEntity.status(403).body("Acceso denegado: " + e.getMessage());
+        }
+        catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("Error de estado: " + e.getMessage());
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error inesperado: " + e.getMessage());
+        }
+    }
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<?> cancel(@PathVariable String id, @RequestParam String requeserCi) {
+        try {
+            service.cancelAppoint(id,requeserCi);
+            return ResponseEntity.ok("Cita cancelada exitosamente");
+        }
+        catch (SecurityException e) {
+            return ResponseEntity.status(403).body("Acceso denegado: " + e.getMessage());
+        }
+        catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("Error de estado: " + e.getMessage());
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error inesperado: " + e.getMessage());
+        }
+    }
 }
