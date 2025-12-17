@@ -38,7 +38,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "doc2", // Otro médico
-    name: "Dra. Ana López",
+    name: "Dr. Hospital",
     specialty: "pediatria",
     email: "ana.lopez@clinica.com",
     role: "medico",

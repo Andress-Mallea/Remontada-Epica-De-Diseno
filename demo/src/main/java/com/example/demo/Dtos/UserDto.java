@@ -1,5 +1,6 @@
 package com.example.demo.Dtos;
 
+import com.example.demo.Model.Medic;
 import com.example.demo.Model.User;
 
 public class UserDto {
@@ -7,13 +8,17 @@ public class UserDto {
     private String email;
     private String name;
     private String rol;
-
+    private String specialty;
     public static UserDto fromUser(User user) {
         UserDto dto = new UserDto();
         dto.setCi(user.getCI());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setRol(user.getRole().toString());
+        if (user instanceof Medic) {
+            
+            dto.setSpecialty(((Medic) user).getSpecialty());
+        }
         return dto;
     }
     public String getCi() { return ci; }
@@ -27,4 +32,6 @@ public class UserDto {
 
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+    public String getSpecialty() { return specialty; }
+    public void setSpecialty(String rol) { this.specialty = rol; }
 }

@@ -1,50 +1,48 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Appointment, AppointmentStatus } from '@/types/clinic';
-import { initialAppointments } from '@/data/mockData';
+import { appointmentService, CreateAppointmentRequest } from '@/services/AppointmentService';
 import { toast } from 'sonner';
 
 interface AppointmentsContextType {
   appointments: Appointment[];
-  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addAppointment: (appointmentData: CreateAppointmentRequest) => Promise<void>;
   updateAppointmentStatus: (id: string, status: AppointmentStatus) => void;
   recordAttendance: (id: string, reason: string, diagnosis: string, notes?: string) => void;
   getAppointmentById: (id: string) => Appointment | undefined;
+  isLoading: boolean;
 }
 
 const AppointmentsContext = createContext<AppointmentsContextType | undefined>(undefined);
 
 export function AppointmentsProvider({ children }: { children: ReactNode }) {
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const addAppointment = (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
-    // Check for doctor conflicts
-    const hasConflict = appointments.some(
-      (apt) =>
-        apt.doctorId === appointmentData.doctorId &&
-        apt.date === appointmentData.date &&
-        apt.startTime === appointmentData.startTime &&
-        apt.status !== 'cancelada'
-    );
-
-    if (hasConflict) {
-      toast.error('El médico ya tiene una cita en ese horario');
-      return;
+  const loadAppointments = async () => {
+    try {
+      setIsLoading(true);
+      const data = await appointmentService.getAllAppointments();
+      setAppointments(data);
+    } catch (error) {
+      console.error("Error al cargar citas:", error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const newAppointment: Appointment = {
-      ...appointmentData,
-      id: `a${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  useEffect(() => {
+    loadAppointments();
+  }, []);
 
-    setAppointments((prev) => [...prev, newAppointment]);
-    toast.success('Cita solicitada exitosamente');
-    
-    // Simulate reminder notification
-    setTimeout(() => {
-      toast.info(`📧 Recordatorio enviado a ${appointmentData.patientName} para su cita del ${appointmentData.date}`);
-    }, 1500);
+  const addAppointment = async (appointmentData: CreateAppointmentRequest) => {
+    try {
+      await appointmentService.create(appointmentData);
+      toast.success('Cita solicitada exitosamente');
+      await loadAppointments();
+    } catch (Error) {
+      toast.error(Error.message || 'Error al solicitar la cita');
+      throw Error;
+    }
   };
 
   const updateAppointmentStatus = (id: string, status: AppointmentStatus) => {
@@ -96,6 +94,7 @@ export function AppointmentsProvider({ children }: { children: ReactNode }) {
         updateAppointmentStatus,
         recordAttendance,
         getAppointmentById,
+        isLoading,
       }}
     >
       {children}

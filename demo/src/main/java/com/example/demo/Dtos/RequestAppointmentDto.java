@@ -2,10 +2,13 @@ package com.example.demo.Dtos;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class RequestAppointmentDto {
     private String requesterCi;
     private String patientCi;
     private String medicCi;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fecha;
 
     public LocalDateTime getFecha() {

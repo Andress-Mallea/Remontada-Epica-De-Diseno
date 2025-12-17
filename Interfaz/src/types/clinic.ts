@@ -14,7 +14,7 @@ export type Specialty =
 
 export const specialtyLabels: Record<Specialty, string> = {
   'medicina-general': 'Medicina General',
-  'pediatria': 'Pediatría',
+  'pediatria': 'Pediatria',
   'cardiologia': 'Cardiología',
   'dermatologia': 'Dermatología',
   'ginecologia': 'Ginecología',
@@ -36,11 +36,18 @@ export const statusColors: Record<AppointmentStatus, string> = {
   'cancelada': 'destructive',
   'atendida': 'success',
 };
+export interface BackendDoctor {
+  ci: string;
+  name: string;
+  specialty: string;
+  email?: string;
 
+}
 export interface Doctor {
   id: string;
   name: string;
   specialty: Specialty;
+  ci?: string;
   availableSlots: TimeSlot[];
 }
 

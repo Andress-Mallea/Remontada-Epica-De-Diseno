@@ -11,28 +11,23 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useAppointments } from "@/context/AppointmentsContext";
-import { useAuth } from "@/context/AuthContext"; // 1. Importar Auth
+import { useAuth } from "@/context/AuthContext";
 import { doctors, timeSlots, patients } from "@/data/mockData";
-import { specialtyLabels, Specialty } from "@/types/clinic";
+import { specialtyLabels, Specialty, BackendDoctor } from "@/types/clinic";
 import { toast } from "sonner";
-
+import { userService } from "@/services/userService";
 export function NewAppointmentDialog() {
-  const { user, hasRole } = useAuth(); // 2. Obtener usuario
+  const { user, hasRole } = useAuth();
   const [open, setOpen] = useState(false);
-  
-  // Estado
   const [ci, setCi] = useState("");
-  // Definimos el tipo explícito para patientFound
   const [patientFound, setPatientFound] = useState<{id: string, name: string, email: string, phone?: string, ci?: string} | null>(null);
-  
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | "">("");
 
   const { addAppointment, appointments } = useAppointments();
-
-  // 3. Efecto: Si es paciente, auto-cargar sus datos al abrir
+  const [backendDoctors, setBackendDoctors] = useState<BackendDoctor[]>([]);
   useEffect(() => {
     if (hasRole('paciente') && user) {
       setPatientFound({
@@ -40,27 +35,51 @@ export function NewAppointmentDialog() {
         name: user.name,
         email: user.email,
         ci: user.ci,
-        phone: user.phone || "" // Asegúrate de que tu tipo User tenga phone si lo usas
       });
     } else {
       setPatientFound(null);
     }
   }, [user, hasRole, open]);
+  useEffect(() => {
+  const loadDoctors = async () => {
+  try {
+    // data recibirá el array de médicos con su specialty
+    const data = await userService.getMedics(); 
+    setBackendDoctors(data);
+  } catch (error) {
+    console.error("Error cargando médicos:", error);
+  }
+};
+  if (open) loadDoctors();
+}, [open]);
 
-  const searchPatient = () => {
-    const patient = patients.find((p) => p.ci === ci);
-    if (patient) {
-      setPatientFound(patient);
-      toast.success(`Paciente encontrado: ${patient.name}`);
-    } else {
-      setPatientFound(null);
-      toast.error("Paciente no encontrado. Verifique el CI.");
-    }
-  };
+ const searchPatient = async () => {
+  if (!ci) {
+    toast.error("Por favor, ingrese un CI");
+    return;
+  }
 
+  try {
+    // CAMBIO: Llamada real al backend
+    const patient = await userService.searchByCi(ci);
+    
+    setPatientFound({
+      id: patient.id,
+      name: patient.name,
+      email: patient.email,
+      ci: patient.ci,
+      // Mapea otros campos si tu backend los devuelve
+    });
+    
+    toast.success(`Paciente encontrado: ${patient.name}`);
+  } catch (Error) {
+    setPatientFound(null);
+    toast.error(Error.message || "Error al buscar el paciente");
+  }
+};
   const filteredDoctors = selectedSpecialty
-    ? doctors.filter((d) => d.specialty === selectedSpecialty)
-    : doctors;
+    ? backendDoctors.filter((d) => d.specialty === selectedSpecialty)
+    : backendDoctors;
 
   const getAvailableSlots = () => {
     if (!selectedDoctor || !selectedDate) return timeSlots;
@@ -71,42 +90,41 @@ export function NewAppointmentDialog() {
     return timeSlots.filter((slot) => !bookedSlots.includes(slot));
   };
 
-  const handleSubmit = () => {
-    if (!patientFound || !selectedDoctor || !selectedDate || !selectedTime) {
+  const handleSubmit = async () => {
+    if (!patientFound || !selectedDoctor || !selectedDate || !selectedTime || !user) {
       toast.error("Complete todos los campos requeridos");
       return;
     }
 
-    const doctor = doctors.find((d) => d.id === selectedDoctor);
-    if (!doctor) return;
 
-    const [hours, minutes] = selectedTime.split(":").map(Number);
-    const endTime = `${String(hours).padStart(2, "0")}:${String((minutes + 30) % 60).padStart(2, "0")}`;
+    // Formateo de fecha compatible con LocalDateTime de Java (@JsonFormat en el DTO)
+    const isoFecha = `${format(selectedDate, "yyyy-MM-dd")}T${selectedTime}:00`;
 
-    addAppointment({
-      patientId: patientFound.id,
-      patientName: patientFound.name,
+    // Objeto estructurado para RequestAppointmentDto.java
+    const appointmentRequest = {
+      requesterCi: user.ci,
       patientCi: patientFound.ci || "",
-      doctorId: doctor.id,
-      doctorName: doctor.name,
-      specialty: doctor.specialty,
-      date: format(selectedDate, "yyyy-MM-dd"),
-      startTime: selectedTime,
-      endTime,
-      status: "solicitada",
-    });
+      medicCi: selectedDoctor, 
+      fecha: isoFecha,
+    };
 
-    // Reset solo si NO es paciente (si es paciente, mantenemos sus datos)
-    if (!hasRole('paciente')) {
-      setCi("");
-      setPatientFound(null);
+    try {
+      // addAppointment en el Contexto ahora debe ser async y llamar al servicio
+      await addAppointment(appointmentRequest);
+      
+      if (!hasRole('PATIENT')) {
+        setCi("");
+        setPatientFound(null);
+      }
+      
+      setSelectedDoctor("");
+      setSelectedDate(undefined);
+      setSelectedTime("");
+      setSelectedSpecialty("");
+      setOpen(false);
+    } catch (error) {
+      // Manejo de error silencioso (el Contexto ya dispara el toast)
     }
-    
-    setSelectedDoctor("");
-    setSelectedDate(undefined);
-    setSelectedTime("");
-    setSelectedSpecialty("");
-    setOpen(false);
   };
 
   return (
@@ -123,7 +141,6 @@ export function NewAppointmentDialog() {
         </DialogHeader>
         <div className="space-y-4 mt-4">
           
-          {/* 4. Si es paciente, solo mostramos sus datos fijos. Si no, mostramos búsqueda. */}
           {hasRole('paciente') ? (
             <div className="bg-primary/10 rounded-lg p-3 border border-primary/20">
                <p className="text-sm font-medium text-primary">Solicitando cita para:</p>
@@ -153,7 +170,6 @@ export function NewAppointmentDialog() {
             </div>
           )}
 
-          {/* Specialty */}
           <div className="space-y-2">
             <Label>Especialidad</Label>
             <Select value={selectedSpecialty} onValueChange={(v) => {
@@ -173,24 +189,23 @@ export function NewAppointmentDialog() {
             </Select>
           </div>
 
-          {/* Doctor */}
           <div className="space-y-2">
-            <Label>Médico</Label>
-            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccione médico" />
-              </SelectTrigger>
-              <SelectContent>
-                {filteredDoctors.map((doctor) => (
-                  <SelectItem key={doctor.id} value={doctor.id}>
-                    {doctor.name} - {specialtyLabels[doctor.specialty]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <Label>Médico</Label>
+        <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccione médico" />
+          </SelectTrigger>
+          <SelectContent>
+            {filteredDoctors.map((doctor) => (
+              // IMPORTANTE: El value ahora es doctor.ci
+              <SelectItem key={doctor.ci} value={doctor.ci}>
+                {doctor.name} - {specialtyLabels[doctor.specialty as Specialty] || doctor.specialty}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-          {/* Date */}
           <div className="space-y-2">
             <Label>Fecha</Label>
             <Popover>
@@ -218,7 +233,6 @@ export function NewAppointmentDialog() {
             </Popover>
           </div>
 
-          {/* Time */}
           <div className="space-y-2">
             <Label>Hora</Label>
             <Select value={selectedTime} onValueChange={setSelectedTime}>
