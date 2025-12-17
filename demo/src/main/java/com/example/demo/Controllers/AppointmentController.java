@@ -1,6 +1,7 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Dtos.AppointmentDto;
+import com.example.demo.Dtos.FinishAppointmentDto;
 import com.example.demo.Dtos.RequestAppointmentDto;
 import com.example.demo.Services.AppointmentService;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +78,25 @@ public class AppointmentController {
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error inesperado: " + e.getMessage());
+        }
+    }
+    @PostMapping("/attend")
+    public ResponseEntity<?> attend(@RequestBody FinishAppointmentDto dto) {
+        try {
+            service.attendAppointment(dto);
+            return ResponseEntity.ok("Cita atendida y finalizada exitosamente");
+        }
+        catch (SecurityException e) {
+            return ResponseEntity.status(403).body("Acceso denegado: " + e.getMessage());
+        }
+        catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Error: "+ e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
         }
     }
 }

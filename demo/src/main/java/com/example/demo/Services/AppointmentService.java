@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.demo.Dtos.FinishAppointmentDto;
+import com.example.demo.State.RegisterAppointment;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Dtos.AppointmentDto;
@@ -96,5 +98,21 @@ public class AppointmentService {
         else {
             throw new SecurityException("No tiene permisos para cancelar esta cita.");
         }
+    }
+    public void attendAppointment(FinishAppointmentDto data) {
+        User user = userRepository.findByCi(data.getMedicCi()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if(user.getRole() != Role.MEDIC) {
+            throw new SecurityException("Solo medicos pueden atender citas");
+        }
+        Appointment appointment = appointmentRepository.findById(data.getAppointmentId());
+        if(appointment == null) throw new RuntimeException("Cita no encontrada");
+        if(!appointment.getMedic().getCI().equals(user.getCI())) {
+            throw  new SecurityException("No se puede atender una cita que no le corresponde");
+        }
+        RegisterAppointment reg = appointment.getRegisterAppointment();
+        reg.setMotive(data.getMotive());
+        reg.setDiagnostic(data.getDiagnostic());
+        appointment.setRegisterAppointment(reg);
+        appointment.Attend();
     }
 }
