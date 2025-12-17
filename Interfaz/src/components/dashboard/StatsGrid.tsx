@@ -28,21 +28,35 @@ function StatCard({ title, value, icon, description }: StatCardProps) {
     </div>
   );
 }
-
 export function StatsGrid() {
   const { appointments } = useAppointments();
 
+  // Función auxiliar para comparar estados de forma segura
+  const checkStatus = (currentStatus: string, target: string) => 
+    currentStatus?.toLowerCase() === target.toLowerCase();
+
   const stats = {
     total: appointments.length,
-    solicitadas: appointments.filter((a) => a.status === "solicitada").length,
-    confirmadas: appointments.filter((a) => a.status === "confirmada").length,
-    atendidas: appointments.filter((a) => a.status === "atendida").length,
-    canceladas: appointments.filter((a) => a.status === "cancelada").length,
-    today: appointments.filter(
-      (a) => a.date === new Date().toISOString().split("T")[0] && a.status !== "cancelada"
-    ).length,
+    // Asegúrate de que estos strings coincidan con el mapeo del Contexto
+    solicitadas: appointments.filter((a) => checkStatus(a.status, "solicitada")).length,
+    confirmadas: appointments.filter((a) => checkStatus(a.status, "confirmada")).length,
+    atendidas: appointments.filter((a) => checkStatus(a.status, "atendida")).length,
+    canceladas: appointments.filter((a) => checkStatus(a.status, "cancelada")).length,
+    
+    today: appointments.filter((a) => {
+      if (!a.date) return false;
+      // Extraemos la fecha pura YYYY-MM-DD
+      const appointmentDate = a.date.split("T")[0];
+      
+      // Fecha de hoy en formato YYYY-MM-DD local
+      const now = new Date();
+      const todayDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      
+      return appointmentDate === todayDate && !checkStatus(a.status, "cancelada");
+    }).length,
   };
 
+  // EL HTML SE MANTIENE EXACTAMENTE IGUAL A TU DISEÑO ORIGINAL
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <StatCard

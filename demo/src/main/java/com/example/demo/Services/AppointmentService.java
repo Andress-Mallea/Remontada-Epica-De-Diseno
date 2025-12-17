@@ -115,4 +115,5 @@ public class AppointmentService {
         appointment.setRegisterAppointment(reg);
         appointment.Attend();
     }
+    
 }

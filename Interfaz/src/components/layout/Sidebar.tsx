@@ -48,12 +48,12 @@ export function Sidebar() {
 
     // Médicos
     if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
-      baseNav.push({ name: "Médicos", href: "/medicos", icon: Stethoscope });
+      baseNav.push({ name: "Médicos", href: "/doctors", icon: Stethoscope });
     }
 
     // Pacientes
     if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
-      baseNav.push({ name: "Pacientes", href: "/pacientes", icon: Users });
+      baseNav.push({ name: "Pacientes", href: "/patients", icon: Users });
     }
 
     // Usuarios

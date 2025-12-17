@@ -31,5 +31,6 @@ export const appointmentService = {
     }
 
     return response.text();
-  }
+  },
+  
 };

@@ -62,5 +62,15 @@ export const userService = {
 
 
   return filtered;
-}
+},
+async getPatients() {
+    // Endpoint: Tu controlador de usuarios filtrando por rol paciente
+    const response = await fetch('http://localhost:8080/users/role/PATIENT');
+    return response.json();
+  },
+  async getUsersByRole(role: string) {
+    const response = await fetch(`${API_URL}/role/${role}`);
+    if (!response.ok) throw new Error(`Error al obtener ${role}`);
+    return response.json();
+  }
 };

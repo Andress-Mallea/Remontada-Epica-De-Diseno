@@ -15,13 +15,14 @@ import Pacientes from "@/pages/Pacientes";
 import Usuarios from "@/pages/Usuarios";
 import MiAgenda from "@/pages/MiAgenda";
 import NotFound from "@/pages/NotFound";
-
 function App() {
   return (
     <Router>
       <AuthProvider>
         <AppointmentsProvider>
          <Routes>
+          <Route path="/doctors" element={<Medicos />} />
+          <Route path="/patients" element={<Pacientes />} />
   {/* Ruta pública */}
   <Route path="/auth" element={<Auth />} />
 

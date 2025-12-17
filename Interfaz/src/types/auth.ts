@@ -10,7 +10,7 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
-  ci?: string; 
+  CI?: string; 
   specialty?: string;
 }
 

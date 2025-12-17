@@ -11,7 +11,15 @@ interface AppointmentsContextType {
   getAppointmentById: (id: string) => Appointment | undefined;
   isLoading: boolean;
 }
-
+interface BackendAppointment {
+  id: number | string;
+  fecha: string;        // "2025-12-25T16:00:00"
+  estado: string;       // "SOLICITADA", "CONFIRMADA", etc.
+  patientCi: string;
+  medicCi: string;
+  requesterCi: string;
+  specialty: string;
+}
 const AppointmentsContext = createContext<AppointmentsContextType | undefined>(undefined);
 
 export function AppointmentsProvider({ children }: { children: ReactNode }) {
@@ -31,8 +39,56 @@ export function AppointmentsProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    loadAppointments();
-  }, []);
+  const fetchAppointments = async () => {
+  try {
+    const response = await fetch('http://localhost:8080/appointmentController');
+    if (!response.ok) throw new Error('Error en la red');
+
+    const data: BackendAppointment[] = await response.json();
+
+  const mappedAppointments: Appointment[] = data.map((app) => {
+  // 1. Verificación de seguridad: Si no hay fecha, usamos una por defecto
+  const fechaSegura = app.fecha || new Date().toISOString(); 
+  
+  // 2. Ahora el split no fallará porque garantizamos que hay un string
+  const [datePart, timePart] = fechaSegura.split("T");
+  const hour = timePart ? timePart.substring(0, 5) : "00:00";
+  
+  // 3. Normalización del estado (Enum Backend -> Frontend)
+  const rawStatus = String(app.estado || "REQUESTED").toUpperCase();
+  let uiStatus: AppointmentStatus = "solicitada"; 
+
+  if (rawStatus === "CANCEL" || rawStatus === "CANCELLED") uiStatus = "cancelada";
+  if (rawStatus === "CONFIRMED") uiStatus = "confirmada";
+  if (rawStatus === "COMPLETED") uiStatus = "atendida";
+
+  return {
+    id: String(app.id || Math.random()),
+    patientId: app.patientCi || "",
+    patientName: "Paciente " + (app.patientCi || "Desconocido"),
+    patientCi: app.patientCi || "",
+    doctorId: app.medicCi || "",
+    doctorName: "Médico " + (app.medicCi || "Asignado"),
+    specialty: (app.specialty) || "General",
+    date: datePart,
+    startTime: hour,
+    endTime: hour,
+    status: uiStatus,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    reason: "",
+    diagnosis: "",
+    notes: ""
+  } as Appointment;
+});
+
+    setAppointments(mappedAppointments);
+  } catch (error) {
+    console.error("Error cargando citas:", error);
+  }
+};
+  fetchAppointments();
+}, []);
 
   const addAppointment = async (appointmentData: CreateAppointmentRequest) => {
     try {

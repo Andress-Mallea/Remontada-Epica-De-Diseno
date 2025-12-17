@@ -20,24 +20,26 @@ export function WeeklySchedule() {
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(weekStart, i));
 
   const getAppointmentForSlot = (date: Date, time: string) => {
-    const dateStr = format(date, "yyyy-MM-dd");
+  const dateStr = format(date, "yyyy-MM-dd");
+  
+  return appointments.find((apt) => {
+    // 1. Limpiamos el startTime del backend por si trae segundos (16:00:00 -> 16:00)
+    const cleanStartTime = apt.startTime?.substring(0, 5);
     
-    return appointments.find((apt) => {
-      // Verificar si coincide fecha, hora y no está cancelada
-      const isMatch = apt.date === dateStr && apt.startTime === time && apt.status !== "cancelada";
-      
-      if (!isMatch) return false;
+    // 2. Comparación básica
+    const isMatch = apt.date === dateStr && cleanStartTime === time && apt.status !== "cancelada";
+    
+    if (!isMatch) return false;
 
-      // 3. FILTRO DE SEGURIDAD:
-      // Si el rol es 'medico', SOLO mostrar si el doctorId coincide con el usuario logueado
-      if (hasRole('medico')) {
-        return apt.doctorId === user?.id;
-      }
+    // 3. Filtro de Seguridad por Rol (Asegúrate de que 'user.CI' coincida con 'doctorId')
+    if (hasRole('medico')) {
+      // Usamos CI porque es lo que estamos guardando como doctorId en el mapeo
+      return apt.doctorId === user?.CI || apt.doctorId === user?.CI;
+    }
 
-      // Si no es médico (admin/recepción), mostrar todo
-      return true;
-    });
-  };
+    return true;
+  });
+};
 
   return (
     <div className="bg-card rounded-xl shadow-card border border-border/50 overflow-hidden animate-fade-in">
