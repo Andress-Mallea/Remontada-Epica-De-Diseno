@@ -7,35 +7,24 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: UserRole[];
 }
-
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (isLoading) return <div>Cargando...</div>;
 
-  if (!isAuthenticated) {
-    // Si no está logueado, mandar al login
+  if (!isAuthenticated || !user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Si hay roles definidos y el usuario no tiene el rol necesario
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    // Lógica de redirección inteligente:
-    // Si es paciente o médico intentando entrar a una ruta prohibida (como Dashboard),
-    // los mandamos a su "Mi Agenda".
-    if (user.role === 'paciente' || user.role === 'medico') {
-      return <Navigate to="/mi-agenda" replace />;
-    }
-    
-    // Para otros casos (o admin), mandar al home por defecto
-    return <Navigate to="/" replace />;
+  // NORMALIZAR ROLES: Convertimos todo a mayúsculas para comparar
+  const userRole = user.role.toUpperCase();
+  const rolesPermitidos = allowedRoles?.map(r => r.toUpperCase());
+
+  if (rolesPermitidos && !rolesPermitidos.includes(userRole)) {
+    // Si no tiene permiso, NO lo mandes a "/" (porque causa bucle)
+    // Mándalo a una página donde todos tengan permiso
+    return <Navigate to="/mi-agenda" replace />; 
   }
 
   return <>{children}</>;

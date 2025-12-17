@@ -63,7 +63,7 @@ export default function Usuarios() {
               Administra los usuarios del sistema
             </p>
           </div>
-          {hasRole('administrador') && <NewUserDialog />}
+          {hasRole('ADMINISTRATOR') && <NewUserDialog />}
         </div>
 
         {/* Users Grid */}

@@ -32,7 +32,7 @@ export default function Medicos() {
               Directorio de profesionales médicos de la clínica
             </p>
           </div>
-          {hasRole('administrador') && <NewDoctorDialog />}
+          {hasRole('ADMINISTRATOR') && <NewDoctorDialog />}
         </div>
 
         {/* Doctors Grid */}

@@ -21,95 +21,62 @@ function App() {
     <Router>
       <AuthProvider>
         <AppointmentsProvider>
-          <Routes>
-            {/* Ruta pública: Login/Registro */}
-            <Route path="/auth" element={<Auth />} />
+         <Routes>
+  {/* Ruta pública */}
+  <Route path="/auth" element={<Auth />} />
 
-            {/* Rutas Protegidas */}
-            
-            {/* Dashboard: Solo Admin y Recepción */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute allowedRoles={['administrador', 'recepcion']}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+  {/* Dashboard: Admin y Recepción */}
+  <Route
+    path="/"
+    element={
+      <ProtectedRoute allowedRoles={['ADMINISTRATOR', 'RECEPTIONIST', 'administrador', 'recepcion']}>
+        <Dashboard />
+      </ProtectedRoute>
+    }
+  />
 
-            {/* Agenda General: Admin, Recepción, Médico y PACIENTE */}
-            <Route
-              path="/agenda"
-              element={
-                <ProtectedRoute allowedRoles={['administrador', 'recepcion', 'medico', 'paciente']}>
-                  <Agenda />
-                </ProtectedRoute>
-              }
-            />
+  {/* Agenda General: Todos */}
+  <Route
+    path="/agenda"
+    element={
+      <ProtectedRoute allowedRoles={['ADMINISTRATOR', 'RECEPTIONIST', 'MEDIC', 'PATIENT', 'administrador', 'recepcion', 'medico', 'paciente']}>
+        <Agenda />
+      </ProtectedRoute>
+    }
+  />
 
-            {/* Mi Agenda: Médico y PACIENTE */}
-            <Route
-              path="/mi-agenda"
-              element={
-                <ProtectedRoute allowedRoles={['medico', 'paciente']}>
-                  <MiAgenda />
-                </ProtectedRoute>
-              }
-            />
+  {/* Mi Agenda: Médico y Paciente */}
+  <Route
+    path="/mi-agenda"
+    element={
+      <ProtectedRoute allowedRoles={['MEDIC', 'PATIENT', 'medico', 'paciente']}>
+        <MiAgenda />
+      </ProtectedRoute>
+    }
+  />
 
-            {/* Citas (Gestión Activa): Admin y Recepción */}
-            <Route
-              path="/citas"
-              element={
-                <ProtectedRoute allowedRoles={['administrador', 'recepcion']}>
-                  <Citas />
-                </ProtectedRoute>
-              }
-            />
+  {/* Usuarios: Solo Admin */}
+  <Route
+    path="/usuarios"
+    element={
+      <ProtectedRoute allowedRoles={['ADMINISTRATOR', 'administrador']}>
+        <Usuarios />
+      </ProtectedRoute>
+    }
+  />
+  
+  {/* Aplica lo mismo para /citas, /historial, /medicos y /pacientes */}
+  <Route
+    path="/citas"
+    element={
+      <ProtectedRoute allowedRoles={['ADMINISTRATOR', 'RECEPTIONIST', 'administrador', 'recepcion']}>
+        <Citas />
+      </ProtectedRoute>
+    }
+  />
 
-            {/* 2. NUEVA RUTA: Historial de Citas (Admin y Recepción) */}
-            <Route
-              path="/historial"
-              element={
-                <ProtectedRoute allowedRoles={['administrador', 'recepcion']}>
-                  <HistorialCitas />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Médicos: Admin y Recepción */}
-            <Route
-              path="/medicos"
-              element={
-                <ProtectedRoute allowedRoles={['administrador', 'recepcion']}>
-                  <Medicos />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Pacientes: Admin y Recepción */}
-            <Route
-              path="/pacientes"
-              element={
-                <ProtectedRoute allowedRoles={['administrador', 'recepcion']}>
-                  <Pacientes />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Usuarios: Solo Admin */}
-            <Route
-              path="/usuarios"
-              element={
-                <ProtectedRoute allowedRoles={['administrador']}>
-                  <Usuarios />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Redirección por defecto y 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+  <Route path="*" element={<NotFound />} />
+</Routes>
           <Toaster />
         </AppointmentsProvider>
       </AuthProvider>
