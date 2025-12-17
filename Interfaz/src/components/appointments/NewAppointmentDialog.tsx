@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils";
 import { useAppointments } from "@/context/AppointmentsContext";
 import { useAuth } from "@/context/AuthContext";
 import { doctors, timeSlots, patients } from "@/data/mockData";
-import { specialtyLabels, Specialty, BackendDoctor } from "@/types/clinic";
+import { specialtyLabels, Specialty } from "@/types/clinic";
 import { toast } from "sonner";
-import { userService } from "@/services/userService";
+import { userService, BackendDoctor  } from "@/services/userService";
 export function NewAppointmentDialog() {
   const { user, hasRole } = useAuth();
   const [open, setOpen] = useState(false);
@@ -34,7 +34,7 @@ export function NewAppointmentDialog() {
         id: user.id,
         name: user.name,
         email: user.email,
-        ci: user.ci,
+        ci: user.CI,
       });
     } else {
       setPatientFound(null);
@@ -53,34 +53,44 @@ export function NewAppointmentDialog() {
   if (open) loadDoctors();
 }, [open]);
 
- const searchPatient = async () => {
+const searchPatient = async () => {
   if (!ci) {
     toast.error("Por favor, ingrese un CI");
     return;
   }
 
   try {
-    // CAMBIO: Llamada real al backend
-    const patient = await userService.searchByCi(ci);
-    
-    setPatientFound({
-      id: patient.id,
-      name: patient.name,
-      email: patient.email,
-      ci: patient.ci,
-      // Mapea otros campos si tu backend los devuelve
-    });
-    
-    toast.success(`Paciente encontrado: ${patient.name}`);
-  } catch (Error) {
+    const response = await userService.searchByCi(ci);
+    console.log("OBJETO PACIENTE REAL:", response);
+
+    if (response) {
+      // USAMOS LAS MAYÚSCULAS QUE VIMOS EN EL LOG
+      const patientName = response.Name || "Sin nombre";
+      
+      setPatientFound({
+        id: response.CI,    // Antes era .id o .ci
+        name: patientName,  // Mapeamos 'Name' a nuestra propiedad 'name'
+        email: response.Email || "",
+        ci: response.CI,
+      });
+      
+      toast.success(`Paciente encontrado: ${patientName}`);
+    }
+  } catch (error) {
     setPatientFound(null);
-    toast.error(Error.message || "Error al buscar el paciente");
+    toast.error("Error al buscar el paciente");
   }
 };
   const filteredDoctors = selectedSpecialty
-    ? backendDoctors.filter((d) => d.specialty === selectedSpecialty)
-    : backendDoctors;
-
+  ? backendDoctors.filter((d) => {
+      // Función para quitar tildes y pasar a minúsculas
+      const normalize = (str: string) => 
+        str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
+      
+      // Comparamos "cardiologia" (backend) con "cardiologia" (interfaz)
+      return normalize(d.specialty) === normalize(selectedSpecialty);
+    })
+  : backendDoctors;
   const getAvailableSlots = () => {
     if (!selectedDoctor || !selectedDate) return timeSlots;
     const dateStr = format(selectedDate, "yyyy-MM-dd");
@@ -89,25 +99,23 @@ export function NewAppointmentDialog() {
       .map((apt) => apt.startTime);
     return timeSlots.filter((slot) => !bookedSlots.includes(slot));
   };
-
+console.log("Usuario logueado actual:", user);
   const handleSubmit = async () => {
-    if (!patientFound || !selectedDoctor || !selectedDate || !selectedTime || !user) {
-      toast.error("Complete todos los campos requeridos");
-      return;
-    }
+  if (!patientFound || !selectedDoctor || !selectedDate || !selectedTime || !user) {
+    toast.error("Complete todos los campos requeridos");
+    return;
+  }
 
+  // selectedDoctor contiene el valor de 'value' del SelectItem (que es doctor.ci)
+  const isoFecha = `${format(selectedDate, "yyyy-MM-dd")}T${selectedTime}:00`;
 
-    // Formateo de fecha compatible con LocalDateTime de Java (@JsonFormat en el DTO)
-    const isoFecha = `${format(selectedDate, "yyyy-MM-dd")}T${selectedTime}:00`;
-
-    // Objeto estructurado para RequestAppointmentDto.java
-    const appointmentRequest = {
-      requesterCi: user.ci,
-      patientCi: patientFound.ci || "",
-      medicCi: selectedDoctor, 
-      fecha: isoFecha,
-    };
-
+  const appointmentRequest = {
+    requesterCi: user.CI,      // CI del que está logueado
+    patientCi: patientFound.ci, // CI del paciente encontrado con la lupa
+    medicCi: selectedDoctor,    // <--- ¡IMPORTANTE! Debe ser la CI del médico
+    fecha: isoFecha,
+  };
+console.log("DATOS ENVIADOS AL BACKEND:", appointmentRequest);
     try {
       // addAppointment en el Contexto ahora debe ser async y llamar al servicio
       await addAppointment(appointmentRequest);
@@ -126,7 +134,6 @@ export function NewAppointmentDialog() {
       // Manejo de error silencioso (el Contexto ya dispara el toast)
     }
   };
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -160,11 +167,11 @@ export function NewAppointmentDialog() {
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
-              {patientFound && (
+             {patientFound && (
                 <div className="bg-accent/50 rounded-lg p-3 mt-2">
+                  {/* Antes podía decir patientFound.nombre, cámbialo a .name */}
                   <p className="font-medium text-accent-foreground">{patientFound.name}</p>
                   <p className="text-sm text-muted-foreground">{patientFound.email}</p>
-                  <p className="text-sm text-muted-foreground">{patientFound.phone}</p>
                 </div>
               )}
             </div>
@@ -190,22 +197,23 @@ export function NewAppointmentDialog() {
           </div>
 
           <div className="space-y-2">
-        <Label>Médico</Label>
-        <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-          <SelectTrigger>
-            <SelectValue placeholder="Seleccione médico" />
-          </SelectTrigger>
-          <SelectContent>
-            {filteredDoctors.map((doctor) => (
-              // IMPORTANTE: El value ahora es doctor.ci
-              <SelectItem key={doctor.ci} value={doctor.ci}>
-                {doctor.name} - {specialtyLabels[doctor.specialty as Specialty] || doctor.specialty}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
+            <Label>Médico</Label>
+            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccione médico" />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredDoctors.map((doctor) => {
+                  console.log("Dibujando doctor:", doctor); // Mira esto en la consola al abrir el select
+                  return (
+                    <SelectItem key={doctor.ci} value={doctor.ci}>
+                      {doctor.name} - {doctor.specialty}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-2">
             <Label>Fecha</Label>
             <Popover>

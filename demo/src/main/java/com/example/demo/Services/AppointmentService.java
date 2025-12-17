@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.demo.Dtos.FinishAppointmentDto;
-import com.example.demo.State.RegisterAppointment;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Dtos.AppointmentDto;
+import com.example.demo.Dtos.FinishAppointmentDto;
 import com.example.demo.Dtos.RequestAppointmentDto;
 import com.example.demo.Model.Medic;
 import com.example.demo.Model.Patient;
@@ -17,6 +16,7 @@ import com.example.demo.Model.User;
 import com.example.demo.Repository.AppointmentRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.State.Appointment;
+import com.example.demo.State.RegisterAppointment;
 
 @Service
 public class AppointmentService {
@@ -30,7 +30,7 @@ public class AppointmentService {
     User requester = userRepository.findByCi(data.getRequesterCi())
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-    if (requester.getRole() != Role.PATIENT && requester.getRole() != Role.RECEPTIONIST) {
+    if (requester.getRole() != Role.PATIENT && requester.getRole() != Role.RECEPTIONIST && requester.getRole() != Role.ADMINISTRATOR) {
         throw new SecurityException("Usuario no autorizado para esta tarea");
     }
 

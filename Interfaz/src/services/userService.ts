@@ -1,15 +1,15 @@
 // src/services/userService.ts
 
 const API_URL = 'http://localhost:8080/users';
-interface BackendUser {
+export interface BackendUser {
   id: string;
   ci: string;
   name: string;
   email: string;
-  tipo: {toString(): string;}
+  rol: {toString(): string;}
   specialty?: string;
 }
-interface BackendDoctor extends BackendUser {
+export interface BackendDoctor extends BackendUser {
   specialty: string; // Aquí ya no marcará error
 }
 export const userService = {
@@ -51,12 +51,16 @@ export const userService = {
   
   const users: BackendUser[] = await response.json();
   
-  const filteredMedics = users.filter((u: BackendUser) => {
-    // Verificamos que u.tipo exista antes de llamar a toString()
-    const roleName = u.tipo ? u.tipo.toString().toUpperCase() : "";
-    return roleName === 'MEDIC';
+  // Filtramos asegurándonos de usar el campo 'rol'
+  const filtered = users.filter((u): u is BackendDoctor => {
+    // 1. Extraemos el valor de 'rol' (que ya vimos que es un String "MEDIC")
+    const roleValue = u.rol ? String(u.rol).toUpperCase() : "";
+    
+    // 2. Verificamos que sea MEDIC y que tenga specialty (que no sea null)
+    return roleValue === 'MEDIC' && u.specialty !== null;
   });
 
-  return filteredMedics as BackendDoctor[];
+
+  return filtered;
 }
 };
