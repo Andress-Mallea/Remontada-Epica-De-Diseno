@@ -31,7 +31,7 @@ public class Appointment {
 
     public void addToMedicAgenda() {
         int diaSemana = this.DateHour.getDayOfWeek().getValue();
-        int indexAgenda = diaSemana - 1; // 0 para Lunes, etc.
+        int indexAgenda = diaSemana - 1; 
         int horaCita = this.DateHour.getHour();
 
         if (this.Medic.getAgenda().isAvaible(indexAgenda, horaCita)) {

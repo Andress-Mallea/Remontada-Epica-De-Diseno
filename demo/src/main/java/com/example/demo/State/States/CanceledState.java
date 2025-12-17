@@ -1,7 +1,6 @@
 package com.example.demo.State.States;
 
 import com.example.demo.State.AppointmentState;
-import com.example.demo.State.StateAppointment;
 
 public class CanceledState extends AppointmentState {
 
@@ -24,7 +23,4 @@ public class CanceledState extends AppointmentState {
 	public void Confirm() {
 		throw new IllegalStateException("No se puede confirmar una cita cancelada.");
 	}
-    public void Finish(){
-        // Final cleanup for canceled appointment if needed (no-op)
-    }
 }

@@ -23,9 +23,9 @@ import com.example.demo.Services.UserServices;
 public class UserController {
     
     private UserServices service;
-    private UserRepository userRepository; // 2. Declarar la variable del repositorio
+    private UserRepository userRepository; 
 
-    // 3. Inyectar ambos en el constructor para solucionar el error "userRepository cannot be resolved"
+   
     public UserController(UserServices service, UserRepository userRepository) {
         this.service = service;
         this.userRepository = userRepository;
@@ -57,10 +57,10 @@ public class UserController {
 
     @GetMapping("/search/{ci}")
     public ResponseEntity<?> getUserByCi(@PathVariable String ci) {
-        // 4. Ahora userRepository ya es reconocido por la clase
+      
         return userRepository.findByCi(ci)
             .map(user -> {
-                // Verificamos que sea un paciente para habilitar el botón en el frontend
+               
                 String tipoUsuario = user.getRole().toString();
                 if (!tipoUsuario.equalsIgnoreCase("PATIENT")) {
                     return ResponseEntity.badRequest().body("El usuario encontrado no es un paciente");
@@ -71,8 +71,7 @@ public class UserController {
     }
    @GetMapping("/medics")
     public ResponseEntity<List<UserDto>> getOnlyMedics() {
-        // Usamos el servicio para obtener todos y filtramos en el controlador
-        // o mejor aún, crea un método en el servicio que haga la consulta filtrada
+       
         List<UserDto> medics = service.getAllUsers().stream()
                 .filter(user -> user.getRol().equalsIgnoreCase("MEDIC"))
                 .toList();
@@ -82,7 +81,7 @@ public class UserController {
     public ResponseEntity<?> getMedicAgenda(@PathVariable String ci) {
     User user = userRepository.findUserByCi(ci);
     if (user instanceof Medic) {
-        // Retorna las citas asociadas a la agenda del médico
+      
         return ResponseEntity.ok(((Medic) user).getAgenda().getAllAppointments());
     }
     return ResponseEntity.status(404).body("Médico no encontrado");

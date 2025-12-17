@@ -126,12 +126,12 @@ public class DataInitializer {
 
 
             RequestAppointmentDto cita = new RequestAppointmentDto();
-            cita.setRequesterCi("333444"); // receptionist
+            cita.setRequesterCi("333444"); 
             cita.setPatientCi("111222");
             cita.setMedicCi("789012");
 
             RequestAppointmentDto cita2 = new RequestAppointmentDto();
-            cita2.setRequesterCi("123123"); // patient (se auto-solicita)
+            cita2.setRequesterCi("123123"); 
             cita2.setPatientCi("123123");
             cita2.setMedicCi("789012");
 
@@ -139,18 +139,18 @@ public class DataInitializer {
                     .plusDays(1)
                     .withHour(10).withMinute(0).withSecond(0).withNano(0);
 
-            while (f.getDayOfWeek().getValue() > 5) { // 6=sábado, 7=domingo
+            while (f.getDayOfWeek().getValue() > 5) { 
                 f = f.plusDays(1);
             }
 
             cita.setFecha(f);
-            cita2.setFecha(f.plusHours(1)); // 11:00 para no chocar
-        if (appointmentService.getAllAppoinments().isEmpty()) { // Solo si la lista está vacía
+            cita2.setFecha(f.plusHours(1));
+        if (appointmentService.getAllAppoinments().isEmpty()) { 
             try {
-                System.out.println("✅ Seeder cita 1: " + appointmentService.createAppointment(cita));
-                System.out.println("✅ Seeder cita 2: " + appointmentService.createAppointment(cita2));
+                System.out.println("Seeder cita 1: " + appointmentService.createAppointment(cita));
+                System.out.println("Seeder cita 2: " + appointmentService.createAppointment(cita2));
             } catch (Exception ex) {
-                System.out.println("⚠️ Error en seeder: " + ex.getMessage());
+                System.out.println("Error en seeder: " + ex.getMessage());
             }
         }
 

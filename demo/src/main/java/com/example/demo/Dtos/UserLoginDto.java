@@ -4,7 +4,7 @@ public class UserLoginDto {
     private String ci;
     private String password;
 
-    // Constructor vacío (necesario para que Spring pueda deserializar el JSON)
+
     public UserLoginDto() {
     }
 

@@ -1,7 +1,7 @@
 package com.example.demo.Dtos;
 
 public class UserRegistrationDto {
-    // 1. Cambiar atributos a minúscula (convención Java)
+    
     private String ci;
     private String email;
     private String password;

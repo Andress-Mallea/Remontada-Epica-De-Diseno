@@ -1,15 +1,16 @@
 package com.example.demo.State.States;
 
-import com.example.demo.State.AppointmentState;
-import com.example.demo.State.StateAppointment;
 import java.time.LocalDateTime;
+
+import com.example.demo.State.AppointmentState;
 import com.example.demo.State.RegisterAppointment;
+import com.example.demo.State.StateAppointment;
 
 public class ConfirmedState extends AppointmentState {
 
 	@Override
 	public void Attend() {
-		// When attending a confirmed appointment, set close hour and move to attended state
+	
 		RegisterAppointment reg = this.context.getRegisterAppointment();
 		if(reg == null) {
 			reg = new RegisterAppointment();
