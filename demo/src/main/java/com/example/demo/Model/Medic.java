@@ -12,7 +12,7 @@ public class Medic extends User implements IObserverNotify {
     }
     @Override
     public void Notify(String message) {
-        //System.out.println(message);
+        System.out.println(message);
     }
 
     public Shedule getAgenda() {

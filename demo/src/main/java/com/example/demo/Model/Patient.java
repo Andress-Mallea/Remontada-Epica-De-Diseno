@@ -10,6 +10,6 @@ public class Patient extends User implements IObserverNotify {
 
     @Override
     public void Notify(String message) {
-        //System.out.println(message);
+        System.out.println(message);
     }
 }
