@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.Dtos.AppointmentDto;
 import com.example.demo.Dtos.RequestAppointmentDto;
 import com.example.demo.Model.*;
 import com.example.demo.Repository.AppointmentRepository;
@@ -8,6 +9,8 @@ import com.example.demo.State.Appointment;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
@@ -49,5 +52,9 @@ public class AppointmentService {
         medic.getAgenda().addAppointment(indexAgenda, horaCita, newAppointment);
         appointmentRepository.save(newAppointment);
         return "Cita creada exitosamente";
+    }
+    public List<AppointmentDto> getAllAppoinments() {
+        List<Appointment> entities = appointmentRepository.getAllAppointments();
+        return entities.stream().map(AppointmentDto::fromEntity).collect(Collectors.toList());
     }
 }

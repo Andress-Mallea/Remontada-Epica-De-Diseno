@@ -18,4 +18,8 @@ public class Medic extends User implements IObserverNotify {
     public Shedule getAgenda() {
         return Agenda;
     }
+
+    public String getSpecialty() {
+        return Specialty;
+    }
 }

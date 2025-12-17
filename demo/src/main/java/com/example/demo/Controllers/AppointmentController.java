@@ -1,12 +1,12 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Dtos.AppointmentDto;
 import com.example.demo.Dtos.RequestAppointmentDto;
 import com.example.demo.Services.AppointmentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/appointmentController")
@@ -29,6 +29,16 @@ public class AppointmentController {
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
+        }
+    }
+    @GetMapping
+    public ResponseEntity<List<AppointmentDto>> getAll() {
+        try {
+            List<AppointmentDto> dtos = service.getAllAppoinments();
+            return ResponseEntity.ok(dtos);
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

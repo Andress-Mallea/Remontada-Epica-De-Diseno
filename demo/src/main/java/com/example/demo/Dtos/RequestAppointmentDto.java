@@ -7,8 +7,6 @@ public class RequestAppointmentDto {
     private String patientCi;
     private String medicCi;
     private LocalDateTime fecha;
-    private int day;
-    private int hour;
 
     public LocalDateTime getFecha() {
         return fecha;
@@ -39,21 +37,5 @@ public class RequestAppointmentDto {
 
     public void setMedicCi(String medicCi) {
         this.medicCi = medicCi;
-    }
-
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public int getHour() {
-        return hour;
-    }
-
-    public void setHour(int hour) {
-        this.hour = hour;
     }
 }

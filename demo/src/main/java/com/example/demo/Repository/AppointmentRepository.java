@@ -23,4 +23,7 @@ public class AppointmentRepository {
     public List<Appointment> findByState(StateAppointment state) {
         return Appoiments.stream().filter(x -> x.getEstate().getState().equals(state)).collect(Collectors.toList());
     }
+    public List<Appointment> getAllAppointments() {
+        return Appoiments;
+    }
 }
