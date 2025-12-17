@@ -25,6 +25,7 @@ public class RequestState extends AppointmentState {
 
 	@Override
 	public void Confirm() {
+		getContext().addToMedicAgenda();
 		ConfirmedState s = new ConfirmedState();
 		s.setContext(this.context);
 		s.setState(StateAppointment.CONFIRMED);

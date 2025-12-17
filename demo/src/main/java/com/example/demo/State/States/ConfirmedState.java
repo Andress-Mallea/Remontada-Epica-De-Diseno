@@ -24,6 +24,7 @@ public class ConfirmedState extends AppointmentState {
 
 	@Override
 	public void Cancel() {
+		getContext().removeFromMedicAgenda();
 		CanceledState s = new CanceledState();
 		s.setContext(this.context);
 		s.setState(StateAppointment.CANCELED);

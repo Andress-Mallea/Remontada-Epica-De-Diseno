@@ -63,7 +63,6 @@ public class AppointmentService {
 
     Patient patient = (Patient) userPatient;
     Appointment newAppointment = new Appointment(patient, medic, data.getFecha());
-    medic.getAgenda().addAppointment(indexAgenda, horaCita, newAppointment);
     appointmentRepository.save(newAppointment);
 
     return "Cita creada exitosamente";
@@ -73,7 +72,7 @@ public class AppointmentService {
         return entities.stream().map(AppointmentDto::fromEntity).collect(Collectors.toList());
     }
     public void confirmAppointment(String appointmentId, String userCi) {
-        User user = userRepository.findByCi(userCi);
+        User user = userRepository.findUserByCi(userCi);
         if(user == null) throw new RuntimeException("Usuario no encontrado");
         Appointment appointment = appointmentRepository.findById(appointmentId);
         if(appointment == null) throw new RuntimeException("Cita no encontrada");
@@ -85,7 +84,7 @@ public class AppointmentService {
         }
     }
     public void cancelAppoint(String appointmentId, String userCi) {
-        User user = userRepository.findByCi(userCi);
+        User user = userRepository.findUserByCi(userCi);
         if(user == null) throw new RuntimeException("Usuario no encontrado");
         Appointment appointment = appointmentRepository.findById(appointmentId);
         if(appointment == null) throw new RuntimeException("Cita no encontrada");
