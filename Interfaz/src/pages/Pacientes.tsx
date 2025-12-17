@@ -35,7 +35,7 @@ export default function Pacientes() {
             </p>
           </div>
           {/* CAMBIO: Solo el administrador puede ver el botón de Nuevo Paciente */}
-          {hasRole('administrador') && <NewPatientDialog />}
+          {hasRole('ADMINISTRATOR') && <NewPatientDialog />}
         </div>
 
         {/* Search */}

@@ -22,42 +22,42 @@ export function Sidebar() {
     const baseNav = [];
 
     // Dashboard
-    if (hasRole(['administrador', 'recepcion'])) {
+    if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
       baseNav.push({ name: "Dashboard", href: "/", icon: LayoutDashboard });
     }
 
     // Agenda
-    if (hasRole(['administrador', 'recepcion', 'medico', 'paciente'])) {
+    if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST', 'MEDIC', 'PATIENT'])) {
       baseNav.push({ name: "Agenda", href: "/agenda", icon: Calendar });
     }
 
     // Citas (Gestión activa)
-    if (hasRole(['administrador', 'recepcion'])) {
+    if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
       baseNav.push({ name: "Citas", href: "/citas", icon: ClipboardList });
     }
 
     // 2. NUEVA PESTAÑA: Historial de Citas
-    if (hasRole(['administrador', 'recepcion'])) {
+    if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
       baseNav.push({ name: "Historial", href: "/historial", icon: History });
     }
 
     // Mi Agenda
-    if (hasRole(['medico', 'paciente'])) {
+    if (hasRole(['MEDIC', 'PATIENT'])) {
       baseNav.push({ name: "Mi Agenda", href: "/mi-agenda", icon: FileText });
     }
 
     // Médicos
-    if (hasRole(['administrador', 'recepcion'])) {
+    if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
       baseNav.push({ name: "Médicos", href: "/medicos", icon: Stethoscope });
     }
 
     // Pacientes
-    if (hasRole(['administrador', 'recepcion'])) {
+    if (hasRole(['ADMINISTRATOR', 'RECEPTIONIST'])) {
       baseNav.push({ name: "Pacientes", href: "/pacientes", icon: Users });
     }
 
     // Usuarios
-    if (hasRole('administrador')) {
+    if (hasRole('ADMINISTRATOR')) {
       baseNav.push({ name: "Usuarios", href: "/usuarios", icon: UserCog });
     }
 

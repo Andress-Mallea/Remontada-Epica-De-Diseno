@@ -1,16 +1,22 @@
 package com.example.demo.Services;
 
-import com.example.demo.Dtos.UserDto;
-import com.example.demo.Dtos.UserRegistrationDto;
-import com.example.demo.Factory.*;
-import com.example.demo.Model.User;
-import com.example.demo.Repository.UserRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.Dtos.UserDto;
+import com.example.demo.Dtos.UserLoginDto;
+import com.example.demo.Dtos.UserRegistrationDto;
+import com.example.demo.Factory.FactoryAdministrator;
+import com.example.demo.Factory.FactoryMedic;
+import com.example.demo.Factory.FactoryPatient;
+import com.example.demo.Factory.FactoryReceptionist;
+import com.example.demo.Factory.FactoryUser;
+import com.example.demo.Model.User;
+import com.example.demo.Repository.UserRepository;
 
 @Service
 public class UserServices {
@@ -33,8 +39,14 @@ public class UserServices {
         repository.save(newUser);
         return newUser;
     }
+    public User Login(UserLoginDto dto) {
+    return repository.findByCi(dto.getCi())
+            .filter(user -> user.getPassword().equals(dto.getPassword()))
+            .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+}
+
     public List<UserDto> getAllUsers() {
-        List<User> users =  repository.getAll();
+        List<User> users = repository.getAll();
         return users.stream().map(UserDto::fromUser).collect(Collectors.toList());
     }
 }

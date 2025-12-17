@@ -15,4 +15,4 @@ Reglas esenciales
 5. Listados por estado, médico y fecha.
 6. Identificación con CI.
 ## Link Documentacion
-Link: https://docs.google.com/document/d/1QRrl_cycSIKQE9rO-C7H73L2HG5zmhoM8FubFE-xTps/edit?usp=sharing
+Link: https://docs.google.com/document/d/1V_H-kVUtsjIVBYKH32Q_yYBHoS9Me9b9/edit?usp=sharing&ouid=117183299983562309954&rtpof=true&sd=true

@@ -46,8 +46,8 @@ export default function MiAgenda() {
 
   // 2. FILTRO INTELIGENTE
   const myAppointments = appointments.filter((apt) => {
-    if (hasRole('medico')) return apt.doctorId === user.id;
-    if (hasRole('paciente')) return apt.patientId === user.id;
+    if (hasRole('MEDIC')) return apt.doctorId === user.id;
+    if (hasRole('PATIENT')) return apt.patientId === user.id;
     return false;
   });
 
@@ -171,9 +171,9 @@ export default function MiAgenda() {
                       <TableHead>Fecha</TableHead>
                       <TableHead>Hora</TableHead>
                       {/* Cabeceras dinámicas según rol */}
-                      {hasRole('medico') && <TableHead>Paciente</TableHead>}
-                      {hasRole('paciente') && <TableHead>Médico</TableHead>}
-                      {hasRole('medico') && <TableHead>CI</TableHead>}
+                      {hasRole('MEDIC') && <TableHead>Paciente</TableHead>}
+                      {hasRole('PATIENT') && <TableHead>Médico</TableHead>}
+                      {hasRole('MEDIC') && <TableHead>CI</TableHead>}
                       <TableHead>Estado</TableHead>
                       <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
@@ -194,7 +194,7 @@ export default function MiAgenda() {
                         </TableCell>
                         
                         {/* Celda Paciente (Solo visible para Médicos) */}
-                        {hasRole('medico') && (
+                        {hasRole('MEDIC') && (
                           <>
                             <TableCell>
                               <div className="flex items-center gap-2">
@@ -209,7 +209,7 @@ export default function MiAgenda() {
                         )}
 
                         {/* Celda Médico (Solo visible para Pacientes) */}
-                        {hasRole('paciente') && (
+                        {hasRole('PATIENT') && (
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Stethoscope className="h-4 w-4 text-muted-foreground" />
@@ -235,7 +235,7 @@ export default function MiAgenda() {
                             </Button>
 
                             {/* Registrar Atención (Solo Médicos) */}
-                            {hasRole('medico') && appointment.status === 'confirmada' && (
+                            {hasRole('MEDIC') && appointment.status === 'confirmada' && (
                               <Button
                                 size="sm"
                                 className="gap-1"
@@ -247,7 +247,7 @@ export default function MiAgenda() {
                             )}
 
                             {/* Cancelar Cita (Solo Pacientes) */}
-                            {hasRole('paciente') && (appointment.status === 'confirmada' || appointment.status === 'solicitada') && (
+                            {hasRole('PATIENT') && (appointment.status === 'confirmada' || appointment.status === 'solicitada') && (
                               <Button
                                 size="sm"
                                 variant="ghost"

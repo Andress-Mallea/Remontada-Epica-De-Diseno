@@ -1,11 +1,12 @@
 package com.example.demo.Repository;
 
-import com.example.demo.Model.Medic;
-import com.example.demo.Model.User;
-import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.Model.User;
 
 @Repository
 public class UserRepository {
@@ -16,8 +17,10 @@ public class UserRepository {
     public List<User> getAll() {
         return Users;
     }
-    public User findByCi(String Ci) {
-        return  Users.stream().filter(x-> x.getCI().equals(Ci)).findFirst().orElse(null);
+    public Optional<User> findByCi(String Ci) {
+        return Users.stream()
+                    .filter(x -> x.getCI().equals(Ci))
+                    .findFirst(); 
     }
-
+    
 }

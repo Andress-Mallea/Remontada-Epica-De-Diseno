@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/authService';
@@ -12,8 +12,9 @@ import { Stethoscope, Mail, Lock, User, Phone, CreditCard, AlertCircle } from 'l
 import { toast } from 'sonner';
 
 export default function Auth() {
+  
   const navigate = useNavigate();
-  const { login, register, isAuthenticated } = useAuth();
+  const { login, register, isAuthenticated, user } = useAuth(); // Extraemos 'user'
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,38 +26,31 @@ export default function Auth() {
   const [registerName, setRegisterName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-  // El rol siempre será paciente, no necesitamos selector
-  const registerRole: UserRole = 'paciente';
+  const registerRole: UserRole = 'PATIENT'; // Cambiado a PATIENT para Java
   const [registerCi, setRegisterCi] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
 
-  if (isAuthenticated) {
-    const currentUser = authService.getCurrentUser();
-    if (currentUser?.role === 'medico' || currentUser?.role === 'paciente') {
-      navigate('/mi-agenda');
+  // --- CORRECCIÓN: Navegación segura dentro de useEffect ---
+ useEffect(() => {
+  // Solo navegar si ya terminó de cargar y estamos realmente en la página de login
+  if (isAuthenticated && user && location.pathname === '/auth') {
+    const role = user.role.toUpperCase();
+    
+    if (role === 'ADMIN' || role === 'RECEPTIONIST') {
+      navigate('/', { replace: true });
     } else {
-      navigate('/');
+      navigate('/mi-agenda', { replace: true });
     }
-    return null;
   }
-
+}, [isAuthenticated, user, navigate, location.pathname]);
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
     try {
       await login({ ci: loginCi, password: loginPassword });
       toast.success('Sesión iniciada correctamente');
-      
-      const user = authService.getCurrentUser();
-      
-      if (user?.role === 'medico' || user?.role === 'paciente') {
-        navigate('/mi-agenda');
-      } else {
-        navigate('/');
-      }
-
+      // La navegación la hará el useEffect automáticamente
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
@@ -68,26 +62,22 @@ export default function Auth() {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
     try {
       await register({
         email: registerEmail,
         password: registerPassword,
         name: registerName,
-        role: registerRole, // Siempre 'paciente'
+        role: registerRole,
         ci: registerCi,
         phone: registerPhone || undefined,
       });
       toast.success('Cuenta creada correctamente. Inicie sesión.');
-      setLoginCi(registerCi); 
-      setLoginPassword('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear cuenta');
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen gradient-hero flex items-center justify-center p-4">
       <div className="w-full max-w-md">

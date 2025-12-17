@@ -1,14 +1,17 @@
-// Tipos de autenticación preparados para backend Java con JWT
+// Interfaz/src/types/auth.ts
 
-export type UserRole = 'paciente' | 'recepcion' | 'medico' | 'administrador';
+// Actualizamos UserRole para que acepte tanto el formato del mock como el de Java
+export type UserRole = 
+  | 'paciente' | 'recepcion' | 'medico' | 'administrador'
+  | 'PATIENT'  | 'RECEPTIONIST' | 'MEDIC'  | 'ADMINISTRATOR';
 
 export interface User {
   id: string;
   email: string;
   name: string;
   role: UserRole;
-  ci?: string; // Para pacientes
-  specialty?: string; // Para médicos
+  ci?: string; 
+  specialty?: string;
 }
 
 export interface AuthResponse {
@@ -32,17 +35,28 @@ export interface RegisterData {
   phone?: string;
 }
 
-// Permisos por rol
+// Mapeamos los permisos también para los roles en mayúsculas
 export const rolePermissions: Record<UserRole, string[]> = {
   paciente: ['view_own_appointments', 'request_appointment', 'cancel_own_appointment'],
+  PATIENT: ['view_own_appointments', 'request_appointment', 'cancel_own_appointment'],
+  
   recepcion: ['view_all_appointments', 'create_patient', 'create_appointment', 'confirm_appointment', 'cancel_appointment', 'send_reminders'],
+  RECEPTIONIST: ['view_all_appointments', 'create_patient', 'create_appointment', 'confirm_appointment', 'cancel_appointment', 'send_reminders'],
+  
   medico: ['view_own_agenda', 'view_patient_history', 'register_attendance', 'close_appointment'],
+  MEDIC: ['view_own_agenda', 'view_patient_history', 'register_attendance', 'close_appointment'],
+  
   administrador: ['all_permissions', 'create_doctor', 'create_receptionist', 'manage_users', 'view_reports'],
+  ADMINISTRATOR: ['all_permissions', 'create_doctor', 'create_receptionist', 'manage_users', 'view_reports'],
 };
 
 export const roleLabels: Record<UserRole, string> = {
-  paciente: 'Paciente',
+  ADMINISTRATOR: 'Administrador',
+  RECEPTIONIST: 'Recepción',
+  MEDIC: 'Médico',
+  PATIENT: 'Paciente',
+  administrador: 'Administrador', // Mantenemos estos por si acaso
   recepcion: 'Recepción',
   medico: 'Médico',
-  administrador: 'Administrador',
+  paciente: 'Paciente',
 };

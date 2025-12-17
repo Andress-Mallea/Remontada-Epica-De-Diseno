@@ -19,8 +19,8 @@ export default function Agenda() {
   
   const [currentWeek, setCurrentWeek] = useState(new Date());
   
-  const isDoctor = hasRole('medico');
-  const isPatient = hasRole('paciente');
+  const isDoctor = hasRole('MEDIC');
+  const isPatient = hasRole('PATIENT');
 
   const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | "all">(
     isDoctor && user?.specialty ? (user.specialty as Specialty) : "all"
