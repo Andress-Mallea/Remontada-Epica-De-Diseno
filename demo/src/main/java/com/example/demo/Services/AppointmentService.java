@@ -57,4 +57,30 @@ public class AppointmentService {
         List<Appointment> entities = appointmentRepository.getAllAppointments();
         return entities.stream().map(AppointmentDto::fromEntity).collect(Collectors.toList());
     }
+    public void confirmAppointment(String appointmentId, String userCi) {
+        User user = userRepository.findByCi(userCi);
+        if(user == null) throw new RuntimeException("Usuario no encontrado");
+        Appointment appointment = appointmentRepository.findById(appointmentId);
+        if(appointment == null) throw new RuntimeException("Cita no encontrada");
+        if(user.getRole() == Role.RECEPTIONIST) {
+            appointment.Confirm();
+        }
+        else {
+            throw new SecurityException("Solo recepcionista puede confirmar citas");
+        }
+    }
+    public void cancelAppoint(String appointmentId, String userCi) {
+        User user = userRepository.findByCi(userCi);
+        if(user == null) throw new RuntimeException("Usuario no encontrado");
+        Appointment appointment = appointmentRepository.findById(appointmentId);
+        if(appointment == null) throw new RuntimeException("Cita no encontrada");
+        boolean isReceptionist = user.getRole() == Role.RECEPTIONIST;
+        boolean isOwnerPatient = user.getRole() == Role.PATIENT && appointment.getPatient().getCI().equals(user.getCI());
+        if(isReceptionist || isOwnerPatient) {
+            appointment.Cancel();
+        }
+        else {
+            throw new SecurityException("No tiene permisos para cancelar esta cita.");
+        }
+    }
 }
