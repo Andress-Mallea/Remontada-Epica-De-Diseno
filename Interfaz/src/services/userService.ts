@@ -9,6 +9,14 @@ export interface BackendUser {
   rol: {toString(): string;}
   specialty?: string;
 }
+export interface CreateUserRequest {
+  ci: string;
+  name: string;
+  email: string;
+  password: string;
+  tipo: 'ADMIN' | 'MEDIC' | 'PATIENT' | 'RECEPTIONIST';
+  specialty?: string; // El signo ? significa que es opcional
+}
 export interface BackendDoctor extends BackendUser {
   specialty: string; // Aquí ya no marcará error
 }
@@ -72,5 +80,21 @@ async getPatients() {
     const response = await fetch(`${API_URL}/role/${role}`);
     if (!response.ok) throw new Error(`Error al obtener ${role}`);
     return response.json();
+  },
+  async createUser(userData: CreateUserRequest): Promise<string> {
+    const response = await fetch('http://localhost:8080/userController/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Error al crear el usuario');
+    }
+
+    return response.text(); 
   }
 };

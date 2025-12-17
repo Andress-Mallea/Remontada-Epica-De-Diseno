@@ -1,9 +1,9 @@
 package com.example.demo.Model;
 
-import com.example.demo.State.Appointment;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.example.demo.State.Appointment;
 
 public class Shedule {
     private Map<Integer, Appointment>[] Agenda;
@@ -32,4 +32,14 @@ public class Shedule {
     public Map<Integer, Appointment>[] getAgenda() {
         return Agenda;
     }
+    public java.util.List<Appointment> getAllAppointments() { 
+    java.util.List<Appointment> all = new java.util.ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+        if (Agenda[i] != null) {
+            all.addAll(Agenda[i].values());
+        }
+    }
+    return all;
+}
+    
 }

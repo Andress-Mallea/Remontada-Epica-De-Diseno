@@ -49,4 +49,5 @@ public class UserServices {
         List<User> users = repository.getAll();
         return users.stream().map(UserDto::fromUser).collect(Collectors.toList());
     }
+    
 }

@@ -2,11 +2,11 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { Appointment, AppointmentStatus } from '@/types/clinic';
 import { appointmentService, CreateAppointmentRequest } from '@/services/AppointmentService';
 import { toast } from 'sonner';
-
+import { useAuth } from '@/context/AuthContext';
 interface AppointmentsContextType {
   appointments: Appointment[];
   addAppointment: (appointmentData: CreateAppointmentRequest) => Promise<void>;
-  updateAppointmentStatus: (id: string, status: AppointmentStatus) => void;
+  updateAppointmentStatus: (id: string, status: AppointmentStatus) => Promise<void>; // Agregado Promise<void>
   recordAttendance: (id: string, reason: string, diagnosis: string, notes?: string) => void;
   getAppointmentById: (id: string) => Appointment | undefined;
   isLoading: boolean;
@@ -25,7 +25,7 @@ const AppointmentsContext = createContext<AppointmentsContextType | undefined>(u
 export function AppointmentsProvider({ children }: { children: ReactNode }) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { user } = useAuth();
   const loadAppointments = async () => {
     try {
       setIsLoading(true);
@@ -37,7 +37,7 @@ export function AppointmentsProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   };
-
+  
   useEffect(() => {
   const fetchAppointments = async () => {
   try {
@@ -101,14 +101,52 @@ export function AppointmentsProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateAppointmentStatus = (id: string, status: AppointmentStatus) => {
+const updateAppointmentStatus = async (id: string, status: AppointmentStatus) => {
+  try {
+    const isConfirm = status === 'confirmada';
+    const endpoint = isConfirm ? 'confirm' : 'cancel';
+    
+    // 1. Usamos la CI que funcionó en Postman
+    const adminCi = "123456"; 
+
+    // 2. IMPORTANTE: Usar los nombres exactos de tus @RequestParam en Java
+    // Confirmar usa 'resquesterCi' (con S)
+    // Cancelar usa 'requeserCi' (sin T)
+    const paramName = isConfirm ? 'resquesterCi' : 'requeserCi';
+    
+    const url = `http://localhost:8080/appointmentController/${id}/${endpoint}?${paramName}=${adminCi}`;
+
+    console.log("URL final disparada:", url);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+
+    // 3. Si el servidor respondió OK, actualizamos la UI
     setAppointments((prev) =>
       prev.map((apt) =>
-        apt.id === id
-          ? { ...apt, status, updatedAt: new Date().toISOString() }
+        // Comparamos IDs como strings para evitar fallos
+        String(apt.id) === String(id) 
+          ? { ...apt, status, updatedAt: new Date().toISOString() } 
           : apt
       )
     );
+
+    toast.success(isConfirm ? "Cita Confirmada" : "Cita Cancelada");
+
+  } catch (error) {
+    console.error("Error en React:", error);
+    toast.error("Error: " + error.message);
+  }
+};
     
     const statusMessages: Record<AppointmentStatus, string> = {
       confirmada: 'Cita confirmada',
@@ -118,7 +156,7 @@ export function AppointmentsProvider({ children }: { children: ReactNode }) {
     };
     
     toast.success(statusMessages[status]);
-  };
+  
 
   const recordAttendance = (id: string, reason: string, diagnosis: string, notes?: string) => {
     setAppointments((prev) =>

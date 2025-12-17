@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.time.LocalDateTime;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +15,6 @@ import com.example.demo.Factory.FactoryReceptionist;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Services.AppointmentService;
-
-import java.time.LocalDateTime;
 
 @Configuration
 public class DataInitializer {
@@ -32,7 +32,7 @@ public class DataInitializer {
                 adminDto.setName("Admin");
                 adminDto.setEmail("admin@clinic.com");
                 adminDto.setPassword("admin123");
-                adminDto.setTipo("ADMIN");
+                adminDto.setTipo("ADMINISTRATOR");
 
                 User admin = adminFactory.AddUser(adminDto);
                 userRepository.save(admin);
@@ -47,7 +47,7 @@ public class DataInitializer {
                 adminDto2.setName("Admin2");
                 adminDto2.setEmail("admin2@clinic.com");
                 adminDto2.setPassword("admin1233");
-                adminDto2.setTipo("ADMIN");
+                adminDto2.setTipo("ADMINISTRATOR");
 
                 User admin2 = adminFactory2.AddUser(adminDto2);
                 userRepository.save(admin2);
@@ -122,7 +122,7 @@ public class DataInitializer {
 
                 userRepository.save(receptionistFactory.AddUser(recepDto));
             }
-
+            
 
 
             RequestAppointmentDto cita = new RequestAppointmentDto();
@@ -145,18 +145,14 @@ public class DataInitializer {
 
             cita.setFecha(f);
             cita2.setFecha(f.plusHours(1)); // 11:00 para no chocar
-
+        if (appointmentService.getAllAppoinments().isEmpty()) { // Solo si la lista está vacía
             try {
-                System.out.println("✅ Seeder cita 1: " + appointmentService.createAppointment(cita) + " (" + f + ")");
+                System.out.println("✅ Seeder cita 1: " + appointmentService.createAppointment(cita));
+                System.out.println("✅ Seeder cita 2: " + appointmentService.createAppointment(cita2));
             } catch (Exception ex) {
-                System.out.println("⚠️ Cita 1 falló: " + ex.getMessage());
+                System.out.println("⚠️ Error en seeder: " + ex.getMessage());
             }
-
-            try {
-                System.out.println("✅ Seeder cita 2: " + appointmentService.createAppointment(cita2) + " (" + f.plusHours(1) + ")");
-            } catch (Exception ex) {
-                System.out.println("⚠️ Cita 2 falló: " + ex.getMessage());
-            }
+        }
 
         };
     }

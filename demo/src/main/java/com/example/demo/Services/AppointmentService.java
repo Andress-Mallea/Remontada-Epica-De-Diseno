@@ -78,7 +78,7 @@ public class AppointmentService {
         if(user == null) throw new RuntimeException("Usuario no encontrado");
         Appointment appointment = appointmentRepository.findById(appointmentId);
         if(appointment == null) throw new RuntimeException("Cita no encontrada");
-        if(user.getRole() == Role.RECEPTIONIST) {
+        if(user.getRole() == Role.RECEPTIONIST || user.getRole() == Role.ADMINISTRATOR) {
             appointment.Confirm();
         }
         else {
@@ -88,9 +88,11 @@ public class AppointmentService {
     public void cancelAppoint(String appointmentId, String userCi) {
         User user = userRepository.findUserByCi(userCi);
         if(user == null) throw new RuntimeException("Usuario no encontrado");
+        System.out.println("User Role: " + user.getRole());
+        System.out.println("Comparando contra: " + Role.ADMINISTRATOR);
         Appointment appointment = appointmentRepository.findById(appointmentId);
         if(appointment == null) throw new RuntimeException("Cita no encontrada");
-        boolean isReceptionist = user.getRole() == Role.RECEPTIONIST;
+        boolean isReceptionist = user.getRole() == Role.RECEPTIONIST || user.getRole() == Role.ADMINISTRATOR;
         boolean isOwnerPatient = user.getRole() == Role.PATIENT && appointment.getPatient().getCI().equals(user.getCI());
         if(isReceptionist || isOwnerPatient) {
             appointment.Cancel();

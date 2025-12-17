@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.Dtos.UserDto;
 import com.example.demo.Dtos.UserLoginDto;
 import com.example.demo.Dtos.UserRegistrationDto;
+import com.example.demo.Model.Medic;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Services.UserServices;
@@ -77,4 +78,13 @@ public class UserController {
                 .toList();
         return ResponseEntity.ok(medics);
     }
+    @GetMapping("/medic/{ci}/agenda")
+    public ResponseEntity<?> getMedicAgenda(@PathVariable String ci) {
+    User user = userRepository.findUserByCi(ci);
+    if (user instanceof Medic) {
+        // Retorna las citas asociadas a la agenda del médico
+        return ResponseEntity.ok(((Medic) user).getAgenda().getAllAppointments());
+    }
+    return ResponseEntity.status(404).body("Médico no encontrado");
+}
 }

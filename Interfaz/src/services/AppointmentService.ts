@@ -32,5 +32,12 @@ export const appointmentService = {
 
     return response.text();
   },
-  
+  async confirm(id: string) {
+    const response = await fetch(`http://localhost:8080/appointmentController/${id}/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!response.ok) throw new Error('No se pudo confirmar la cita');
+    return response.text();
+  },
 };

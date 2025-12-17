@@ -1,16 +1,16 @@
 package com.example.demo.State;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.demo.Model.Medic;
 import com.example.demo.Model.Patient;
 import com.example.demo.Observer.IObserverNotify;
 import com.example.demo.State.States.RequestState;
-
-import java.util.ArrayList;
-import java.util.List;
 public class Appointment {
-    private static String ID = "1000";
+    private static int idCounter = 1000;
+    private String ID;
     private Patient Patient;
     private Medic Medic;
     private LocalDateTime DateHour;
@@ -19,7 +19,7 @@ public class Appointment {
 
     private List<IObserverNotify> Subscribers = new ArrayList<>();
     public Appointment(Patient Patient, Medic Medic, LocalDateTime DateHour) {
-        this.ID = String.valueOf((Integer.parseInt(ID) + 1));
+        this.ID = String.valueOf(++idCounter);
         this.Patient = Patient;
         this.Medic = Medic;
         this.DateHour = DateHour;
